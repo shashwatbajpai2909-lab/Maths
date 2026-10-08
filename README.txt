@@ -1,0 +1,1 @@
+Math Lab X CAS PWA. Upload these files to an HTTPS host such as GitHub Pages. Open in Safari → Share → Add to Home Screen.

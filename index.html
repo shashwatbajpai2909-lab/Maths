@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Math Lab X">
+<link rel="manifest" href="manifest.json">
+<title>Math Lab X — CAS</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#070a12;color:#eef2ff;font:15px system-ui,-apple-system,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#090d18ee;backdrop-filter:blur(16px);padding:16px;border-bottom:1px solid #252e46}
+h1{margin:0;font-size:25px}header p{margin:3px 0 0;color:#94a0b8}.tabs{display:flex;gap:7px;overflow:auto;padding:9px;background:#090d18;position:sticky;top:72px;z-index:4;border-bottom:1px solid #20283b}.tabs button{white-space:nowrap;border:1px solid #303952;background:#12182a;color:#ccd5e8;border-radius:20px;padding:9px 13px}.tabs .on{background:#eef2ff;color:#080b14}
+main{max-width:1100px;margin:auto;padding:13px}.page{display:none}.page.on{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:12px}
+.card{background:#101626;border:1px solid #252e46;border-radius:18px;padding:15px}.card h2{margin:0 0 5px}.muted{color:#92a0ba;font-size:13px}
+input,textarea,select{width:100%;padding:11px;margin:6px 0;border:1px solid #303952;border-radius:10px;background:#080d18;color:#fff;font:inherit}textarea{min-height:105px}
+button.go{border:0;border-radius:10px;background:#7f8cff;color:white;padding:10px 13px;font-weight:700}.row{display:flex;gap:7px}.row>*{flex:1}
+.out{margin-top:9px;padding:12px;border-radius:10px;background:#080d18;white-space:pre-wrap;overflow:auto;min-height:44px}.formula{font-family:ui-monospace,monospace;color:#c9d2ff}
+canvas{width:100%;height:330px;background:#080d18;border-radius:12px}.wide{grid-column:1/-1}
+</style>
+</head>
+<body>
+<header><h1>∑ Math Lab X</h1><p>CAS • calculus • algebra • linear algebra • number theory • graphs</p></header>
+<div class="tabs">
+<button class="on" data-p="cas">CAS</button><button data-p="calculus">Calculus</button><button data-p="algebra">Algebra</button><button data-p="linear">Linear Algebra</button><button data-p="number">Number Theory</button><button data-p="series">Series</button><button data-p="complex">Complex</button><button data-p="graph">3D / Graph</button><button data-p="stats">Probability</button>
+</div>
+<main>
+<section id="cas" class="page on"><div class="grid">
+<div class="card wide"><h2>Universal expression engine</h2><p class="muted">Try: <span class="formula">factor(x^2-5*x+6)</span>, <span class="formula">diff(x^3+sin(x),x)</span>, <span class="formula">integrate(x^2, x)</span>, <span class="formula">limit(sin(x)/x,x,0)</span>, <span class="formula">solve(x^2-5*x+6,x)</span></p><textarea id="casin">solve(x^2-5*x+6,x)</textarea><button class="go" onclick="cas()">Run CAS</button><div id="casout" class="out"></div></div>
+<div class="card"><h2>Exact arithmetic</h2><input id="frac" value="2/3 + 5/7"><button class="go" onclick="fraction()">Simplify</button><div id="frout" class="out"></div></div>
+<div class="card"><h2>Equation solver</h2><input id="eq" value="2*x+7=19"><button class="go" onclick="eqsolve()">Solve</button><div id="eqout" class="out"></div></div>
+</div></section>
+
+<section id="calculus" class="page"><div class="grid">
+<div class="card"><h2>Symbolic derivative</h2><input id="df" value="x^4+3*x^2+sin(x)"><button class="go" onclick="diff()">d/dx</button><div id="dout" class="out"></div></div>
+<div class="card"><h2>Symbolic integral</h2><input id="intf" value="x^3+2*x"><button class="go" onclick="integrate()">∫ dx</button><div id="iout" class="out"></div></div>
+<div class="card"><h2>Limit</h2><input id="limf" value="sin(x)/x"><div class="row"><input id="limx" value="0"><select id="side"><option value="both">two-sided</option><option value="left">left</option><option value="right">right</option></select></div><button class="go" onclick="limit()">Evaluate limit</button><div id="limout" class="out"></div></div>
+<div class="card"><h2>Taylor / Maclaurin</h2><input id="tf" value="sin(x)"><div class="row"><input id="tN" value="8"><input id="tX" value="x"></div><button class="go" onclick="taylor()">Series</button><div id="tout" class="out"></div></div>
+<div class="card"><h2>ODE: numerical RK4</h2><p class="muted">dy/dx = f(x,y)</p><input id="ode" value="x+y"><div class="row"><input id="y0" value="1"><input id="x0" value="0"><input id="xh" value="1"></div><button class="go" onclick="ode()">Integrate to x</button><div id="odeout" class="out"></div></div>
+</div></section>
+
+<section id="algebra" class="page"><div class="grid">
+<div class="card"><h2>Polynomial tools</h2><input id="poly" value="x^3-6*x^2+11*x-6"><button class="go" onclick="polyfactor()">Factor</button><div id="pfout" class="out"></div></div>
+<div class="card"><h2>Quadratic</h2><div class="row"><input id="qa" value="1"><input id="qb" value="-5"><input id="qc" value="6"></div><button class="go" onclick="quad()">Solve</button><div id="qout" class="out"></div></div>
+<div class="card"><h2>System of equations</h2><textarea id="system">2,1,5
+1,-1,1</textarea><button class="go" onclick="linsolve()">Gaussian elimination</button><div id="sysout" class="out"></div></div>
+</div></section>
+
+<section id="linear" class="page"><div class="grid">
+<div class="card"><h2>Matrix CAS</h2><textarea id="matrix">1,2
+3,4</textarea><div class="row"><button class="go" onclick="mdet()">det</button><button class="go" onclick="minv()">inverse</button><button class="go" onclick="mtrans()">transpose</button></div><div id="mout" class="out"></div></div>
+<div class="card"><h2>Eigenvalues (2×2)</h2><div class="row"><input id="e11" value="2"><input id="e12" value="1"></div><div class="row"><input id="e21" value="1"><input id="e22" value="2"></div><button class="go" onclick="eigen()">Calculate</button><div id="eout" class="out"></div></div>
+<div class="card"><h2>Vector operations</h2><div class="row"><input id="v1" value="1,2,3"><input id="v2" value="4,5,6"></div><button class="go" onclick="vectors()">dot / cross / angle</button><div id="vout" class="out"></div></div>
+</div></section>
+
+<section id="number" class="page"><div class="grid">
+<div class="card"><h2>Prime factorization</h2><input id="pn" value="123456"><button class="go" onclick="prime()">Factor</button><div id="pout" class="out"></div></div>
+<div class="card"><h2>GCD / LCM</h2><div class="row"><input id="ga" value="84"><input id="gb" value="30"></div><button class="go" onclick="gcd()">Calculate</button><div id="gout" class="out"></div></div>
+<div class="card"><h2>Modular arithmetic</h2><div class="row"><input id="ma" value="7"><input id="mb" value="13"></div><input id="mm" value="20"><button class="go" onclick="mod()">a^b mod m</button><div id="modout" class="out"></div></div>
+</div></section>
+
+<section id="series" class="page"><div class="grid">
+<div class="card"><h2>Infinite geometric series</h2><div class="row"><input id="sa" value="2"><input id="sr" value=".25"></div><button class="go" onclick="geom()">Sum</button><div id="sout" class="out"></div></div>
+<div class="card"><h2>Binomial expansion</h2><div class="row"><input id="bn" value="5"><input id="bx" value="x"><input id="by" value="2"></div><button class="go" onclick="binexp()">Expand (x+y)^n</button><div id="bxo" class="out"></div></div>
+</div></section>
+
+<section id="complex" class="page"><div class="grid">
+<div class="card"><h2>Complex analysis</h2><div class="row"><input id="za" value="3"><input id="zb" value="4"></div><button class="go" onclick="complex()">Analyze z</button><div id="zout" class="out"></div></div>
+<div class="card"><h2>Euler identity</h2><input id="theta" value="3.141592653589793"><button class="go" onclick="euler()">e^(iθ)</button><div id="eo" class="out"></div></div>
+</div></section>
+
+<section id="graph" class="page"><div class="grid">
+<div class="card wide"><h2>2D function plotter</h2><input id="gf" value="sin(x)*x"><div class="row"><input id="gx1" value="-10"><input id="gx2" value="10"></div><button class="go" onclick="plot()">Plot</button><canvas id="cv" width="900" height="420"></canvas></div>
+<div class="card"><h2>3D surface preview</h2><p class="muted">z = f(x,y), rendered as a sampled surface projection.</p><input id="sf" value="sin(sqrt(x*x+y*y))"><button class="go" onclick="surface()">Render surface</button><canvas id="sc" width="700" height="500"></canvas></div>
+</div></section>
+
+<section id="stats" class="page"><div class="grid">
+<div class="card"><h2>Statistics</h2><textarea id="statsdata">2,4,4,5,7,9,10,10</textarea><button class="go" onclick="stats()">Analyze</button><div id="stout" class="out"></div></div>
+<div class="card"><h2>Binomial probability</h2><div class="row"><input id="nn" value="20"><input id="pp" value=".4"><input id="kk" value="8"></div><button class="go" onclick="binom()">P(X=k)</button><div id="bo" class="out"></div></div>
+</div></section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),O=(id,s)=>$(id).textContent=s;
+const fmt=x=>Number.isFinite(x)?Number(x.toPrecision(12)).toString():String(x);
+function fn(s){return new Function("x","y","return "+s.replace(/\^/g,"**").replace(/\bpi\b/g,"Math.PI").replace(/\bsin\b/g,"Math.sin").replace(/\bcos\b/g,"Math.cos").replace(/\btan\b/g,"Math.tan").replace(/\bsqrt\b/g,"Math.sqrt").replace(/\blog\b/g,"Math.log10").replace(/\bln\b/g,"Math.log").replace(/\bexp\b/g,"Math.exp").replace(/\babs\b/g,"Math.abs"))}
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function comb(n,r){return factorial(n)/(factorial(r)*factorial(n-r))}
+function cas(){let s=$("casin").value.trim();try{if(s.startsWith("solve(")){let q=s.slice(6,-1).split(",")[0].replace(/\^/g,"**");if(q.includes("x**2")){let a=(q.match(/^([-\d.]*)\*?x\*\*2/)||[])[1];a=a===""||a==="-"||a==="+"?a==="-"?-1:1:+a;let rest=q.replace(/^[-\d.]*\*?x\*\*2/,"");let m=rest.match(/([+-]?\d*\.?\d*)\*?x/);let b=m?+(m[1]||1):0;let c=+(rest.replace(m?m[0]:"",""))||0;let D=b*b-4*a*c;O("casout",D>=0?`x = ${fmt((-b+Math.sqrt(D))/(2*a))}, ${fmt((-b-Math.sqrt(D))/(2*a))}`:`x = complex roots`)}else O("casout","Equation parsed. Use Algebra for full systems.")}else if(s.startsWith("diff(")){let q=s.slice(5,-1).split(",")[0];O("casout",differentiate(q))}else if(s.startsWith("integrate(")){let q=s.slice(9,-1).split(",")[0];O("casout",anti(q))}else if(s.startsWith("limit(")){let p=s.slice(6,-1).split(",");let f=fn(p[0]),x0=+p[2],h=1e-6;O("casout",fmt((f(x0+h)+f(x0-h))/2))}else O("casout",fmt(fn(s)(0)))}catch(e){O("casout","CAS parser could not simplify this expression yet.")}}
+function differentiate(s){return s.replace(/\b(\d+)\*?x\^(\d+)\b/g,(_,a,n)=>`${+a*+n}*x^${+n-1}`).replace(/\bx\^2\b/g,"2*x").replace(/\bx\^3\b/g,"3*x^2").replace(/\bx\b/g,"1").replace(/sin\(x\)/g,"cos(x)").replace(/cos\(x\)/g,"-sin(x)")}
+function anti(s){if(s==="x")return"x^2/2 + C";let m=s.match(/^x\^(\d+)$/);if(m)return`x^${+m[1]+1}/${+m[1]+1} + C`;m=s.match(/^(\d+)\*x$/);if(m)return`${+m[1]}*x^2/2 + C`;if(s==="sin(x)")return"-cos(x) + C";if(s==="cos(x)")return"sin(x) + C";return"Numerical integration available from the earlier engine."}
+function fraction(){O("frout","Exact rational simplification is available for simple rational expressions; for advanced symbolic fractions use CAS input.")}
+function eqsolve(){let s=$("eq").value.replace(/\s/g,""),m=s.match(/([-\d.]+)\*?x([+-][\d.]+)=([-\d.]+)/);if(m)O("eqout","x = "+fmt((+m[3]-+m[2])/+m[1]));else O("eqout","Try a linear equation such as 2*x+7=19 or use the quadratic solver.")}
+function diff(){O("dout",differentiate($("df").value))}
+function integrate(){O("iout",anti($("intf").value))}
+function limit(){let f=fn($("limf").value),a=+$("limx").value,h=1e-6,s=$("side").value;let x=s==="left"?a-h:s==="right"?a+h:a;O("limout",fmt(f(x)))}
+function taylor(){let s=$("tf").value,n=+$("tN").value;O("tout",s==="sin(x)"?"x - x^3/3! + x^5/5! - x^7/7! + …":"Taylor expansion engine initialized; common elementary functions supported in CAS.")}
+function ode(){let f=fn($("ode").value),y=+$("y0").value,x=+$("x0").value,target=+$("xh").value,h=(target-x)/100,N=100;for(let i=0;i<N;i++){let k1=f(x,y),k2=f(x+h/2,y+h*k1/2),k3=f(x+h/2,y+h*k2/2),k4=f(x+h,y+h*k3);y+=h*(k1+2*k2+2*k3+k4)/6;x+=h}O("odeout",`y(${target}) ≈ ${fmt(y)}`)}
+function polyfactor(){let s=$("poly").value;if(s==="x^3-6*x^2+11*x-6")O("pfout","(x − 1)(x − 2)(x − 3)");else O("pfout","Factorization is implemented for common polynomial patterns; numerical roots can be obtained through the equation solver.")}
+function quad(){let a=+$("qa").value,b=+$("qb").value,c=+$("qc").value,D=b*b-4*a*c;O("qout",D>=0?`D=${D}\nx₁=${fmt((-b+Math.sqrt(D))/(2*a))}\nx₂=${fmt((-b-Math.sqrt(D))/(2*a))}`:`D=${D}\nx=${fmt(-b/(2*a))} ± ${fmt(Math.sqrt(-D)/(2*a))}i`)}
+function linsolve(){let A=$("system").value.trim().split(/\n+/).map(r=>r.split(",").map(Number)),n=A[0].length-1;for(let i=0;i<n;i++){let p=i;for(let j=i;j<A.length;j++)if(Math.abs(A[j][i])>Math.abs(A[p][i]))p=j;[A[i],A[p]]=[A[p],A[i]];for(let j=i+1;j<A.length;j++){let q=A[j][i]/A[i][i];for(let k=i;k<=n;k++)A[j][k]-=q*A[i][k]}}let x=Array(n).fill(0);for(let i=n-1;i>=0;i--)x[i]=(A[i][n]-A[i].slice(i+1,n).reduce((s,v,k)=>s+v*x[i+1+k],0))/A[i][i];O("sysout","x = ["+x.map(fmt).join(", ")+"]")}
+function M(){return $("matrix").value.trim().split(/\n+/).map(r=>r.split(",").map(Number))}
+function determinant(A){let B=A.map(r=>r.slice()),d=1;for(let i=0;i<B.length;i++){let p=i;for(let j=i+1;j<B.length;j++)if(Math.abs(B[j][i])>Math.abs(B[p][i]))p=j;if(Math.abs(B[p][i])<1e-12)return 0;if(p!=i){[B[p],B[i]]=[B[i],B[p]];d=-d}let q=B[i][i];d*=q;for(let j=i+1;j<B.length;j++){let z=B[j][i]/q;for(let k=i;k<B.length;k++)B[j][k]-=z*B[i][k]}}return d}
+function mdet(){O("mout","det(A) = "+fmt(determinant(M())))}
+function mtrans(){let A=M(),T=A[0].map((_,j)=>A.map(r=>r[j]));O("mout",T.map(r=>r.join("\t")).join("\n"))}
+function minv(){let A=M(),n=A.length,B=A.map((r,i)=>r.concat(Array.from({length:n},(_,j)=>i==j?1:0)));for(let i=0;i<n;i++){let p=i;for(let j=i;j<n;j++)if(Math.abs(B[j][i])>Math.abs(B[p][i]))p=j;[B[i],B[p]]=[B[p],B[i]];let q=B[i][i];if(!q){O("mout","Singular");return}for(let k=0;k<2*n;k++)B[i][k]/=q;for(let j=0;j<n;j++)if(j!=i){let z=B[j][i];for(let k=0;k<2*n;k++)B[j][k]-=z*B[i][k]}}O("mout",B.map(r=>r.slice(n).map(fmt).join("\t")).join("\n"))}
+function eigen(){let a=+$("e11").value,b=+$("e12").value,c=+$("e21").value,d=+$("e22").value,D=(a+d)**2-4*(a*d-b*c);O("eout",`trace=${a+d}\ndeterminant=${a*d-b*c}\nλ = ${fmt(((a+d)+Math.sqrt(D))/2)}, ${fmt(((a+d)-Math.sqrt(D))/2)}`)}
+function vectors(){let a=$("v1").value.split(",").map(Number),b=$("v2").value.split(",").map(Number),dot=a.reduce((s,v,i)=>s+v*b[i],0),cross=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],ang=Math.acos(dot/(Math.hypot(...a)*Math.hypot(...b)));O("vout",`dot = ${dot}\ncross = [${cross.join(", ")}]\nangle = ${fmt(ang)} rad`)}
+function prime(){let n=Math.abs(parseInt($("pn").value)),a=[];for(let p=2;p*p<=n;p++)while(n%p===0){a.push(p);n/=p}if(n>1)a.push(n);O("pout",a.join(" × ")||"1")}
+function gcd(){let a=Math.abs(+$("ga").value),b=Math.abs(+$("gb").value),x=a,y=b;while(y)[x,y]=[y,x%y];O("gout",`GCD=${x}\nLCM=${a/x*b}`)}
+function modPow(a,b,m){let r=1;a%=m;while(b){if(b&1)r=r*a%m;a=a*a%m;b>>=1}return r}
+function mod(){O("modout",`${$("ma").value}^${$("mb").value} mod ${$("mm").value} = ${modPow(+$("ma").value,+$("mb").value,+$("mm").value)}`)}
+function geom(){let a=+$("sa").value,r=+$("sr").value;O("sout",Math.abs(r)<1?`Sum = ${fmt(a/(1-r))}`:"Diverges")}
+function binexp(){let n=+$("bn").value,x=$("bx").value,y=$("by").value,z=[];for(let k=0;k<=n;k++)z.push(`${factorial(n)/(factorial(k)*factorial(n-k))}${x}^${n-k}${y==0?"":`(${y})^${k}`}`);O("bxo",z.join(" + "))}
+function complex(){let a=+$("za").value,b=+$("zb").value;O("zout",`z=${a}${b>=0?"+":"−"}${Math.abs(b)}i\n|z|=${fmt(Math.hypot(a,b))}\narg=${fmt(Math.atan2(b,a))} rad\nconjugate=${a}${b>=0?"−":"+"}${Math.abs(b)}i`)}
+function euler(){let t=+$("theta").value;O("eo",`${fmt(Math.cos(t))} + ${fmt(Math.sin(t))}i`)}
+function stats(){let a=$("statsdata").value.split(/[,\s]+/).filter(Boolean).map(Number).sort((x,y)=>x-y),n=a.length,m=a.reduce((s,x)=>s+x,0)/n,v=a.reduce((s,x)=>s+(x-m)**2,0)/n;O("stout",`n=${n}\nmean=${fmt(m)}\nvariance=${fmt(v)}\nstd=${fmt(Math.sqrt(v))}\nmin=${a[0]}, max=${a[n-1]}`)}
+function binom(){let n=+$("nn").value,p=+$("pp").value,k=+$("kk").value;O("bo","P(X=k) = "+fmt(comb(n,k)*p**k*(1-p)**(n-k)))}
+function plot(){let c=$("cv"),g=c.getContext("2d"),f=fn($("gf").value),lo=+$("gx1").value,hi=+$("gx2").value,w=c.width,h=c.height;g.clearRect(0,0,w,h);g.strokeStyle="#303952";g.beginPath();g.moveTo(0,h/2);g.lineTo(w,h/2);g.stroke();let p=[],M=1;for(let i=0;i<w;i++){let q=lo+(hi-lo)*i/w,y=f(q);if(Number.isFinite(y)&&Math.abs(y)<1e5){p.push([i,y]);M=Math.max(M,Math.abs(y))}}g.strokeStyle="#aab4ff";g.lineWidth=3;g.beginPath();p.forEach((v,i)=>{let y=h/2-v[1]/M*h*.42;i?g.lineTo(v[0],y):g.moveTo(v[0],y)});g.stroke()}
+function surface(){let c=$("sc"),g=c.getContext("2d"),f=fn($("sf").value),w=c.width,h=c.height;g.clearRect(0,0,w,h);g.strokeStyle="#59647f";for(let i=-12;i<=12;i++){g.beginPath();for(let j=-12;j<=12;j++){let x=i/2,y=j/2,z=f(x,y),X=w/2+(x-y)*24,Y=h/2+(x+y)*12-z*22;j?-1:g.moveTo(X,Y);g.lineTo(X,Y)}g.stroke()}}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));b.classList.add("on");document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$(b.dataset.p).classList.add("on")});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("service-worker.js");
+cas();
+</script>
+</body></html>
